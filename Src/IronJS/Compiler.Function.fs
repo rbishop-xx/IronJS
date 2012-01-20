@@ -111,7 +111,7 @@ module internal Function =
 
     //
     let invokeClr func =
-      Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV>] [!!!ErrorUtils.nextErrorId()]
+      Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV>] [!!!Error.cannotInvokeCLRFunction] 
 
     //
     Utils.ensureFunction ctx func invokeJs invokeClr
@@ -138,19 +138,19 @@ module internal Function =
       (fun x -> 
         (Dlr.ternary
           (Dlr.isNull_Real x)
-          (Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV>] [!!!ErrorUtils.nextErrorId()])
+          (Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV>] [!!!(Error.unexpectedNullReferenceForMember "property" name)])
           (Utils.Constants.Boxed.undefined)
         )
       ))
 
   ///
-  let invokeIndex (ctx:Ctx) object' index args =
+  let invokeIndex (ctx:Ctx) object' (index:Dlr.Expr) args =
     (Utils.ensureObject ctx object'
       (fun x -> Object.Index.get x index |> invokeFunction ctx x args)
       (fun x -> 
         (Dlr.ternary
           (Dlr.isNull_Real x)
-          (Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV>] [!!!ErrorUtils.nextErrorId()])
+          (Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV>] [!!!Error.unexpectedNullReference])
           (Utils.Constants.Boxed.undefined)
         )
       ))
@@ -184,7 +184,7 @@ module internal Function =
       )
 
       (fun _ -> 
-        Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV>] [!!!ErrorUtils.nextErrorId()]
+        Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV>] [!!!Error.cannotNewCLRFunction]
       )
       
   /// 11.2.3 function calls
@@ -226,7 +226,7 @@ module internal Function =
     let eval = Dlr.paramT<BoxedValue> "eval"
     let target = Dlr.paramT<EvalTarget> "target"
     let evalTarget = ctx.Compile evalTarget
-    
+    //TODO: allow host to block eval
     Dlr.block [eval; target] [
       (Dlr.assign eval (ctx.Parameters |> Parameters.globals |> Object.Property.get !!!"eval"))
       (Dlr.assign target Dlr.newT<EvalTarget>)

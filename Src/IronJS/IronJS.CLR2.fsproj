@@ -18,10 +18,10 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <Tailcalls>false</Tailcalls>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>D:\Projects\rbishop_IronJS\Lib\</OutputPath>
     <DefineConstants>TRACE;DEBUG;CLR2;LEGACY_BIGINT;LEGACY_DELEGATES_HIGH_ARITY</DefineConstants>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\IronJS.XML</DocumentationFile>
+    <DocumentationFile>D:\Projects\rbishop_IronJS\Lib\IronJS.XML</DocumentationFile>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
     <PlatformTarget>AnyCPU</PlatformTarget>

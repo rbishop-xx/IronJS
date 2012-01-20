@@ -99,7 +99,7 @@ module internal Function =
             |> Array.ofSeq
 
           else
-            func.Env.RaiseTypeError()
+            func.Env.RaiseTypeError("Invalid argument to Function.apply(); second parameter must be Array of arguments for target function.")
 
         else
           Array.zeroCreate 0

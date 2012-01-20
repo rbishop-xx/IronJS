@@ -171,7 +171,7 @@ namespace IronJS.Runtime
                     return PickReturnObject(Call(o), o);
 
                 default:
-                    return Env.RaiseTypeError<BoxedValue>();
+                    return Env.RaiseTypeError<BoxedValue>("Cannot invoke constructor on a CLR Function");
             }
         }
 
@@ -187,7 +187,7 @@ namespace IronJS.Runtime
                     return PickReturnObject(Call(o, a0), o);
 
                 default:
-                    return Env.RaiseTypeError<BoxedValue>();
+                    return Env.RaiseTypeError<BoxedValue>("Cannot invoke constructor on a CLR Function");
             }
         }
 
@@ -203,7 +203,7 @@ namespace IronJS.Runtime
                     return PickReturnObject(Call(o, a0, a1), o);
 
                 default:
-                    return Env.RaiseTypeError<BoxedValue>();
+                    return Env.RaiseTypeError<BoxedValue>("Cannot invoke constructor on a CLR Function");
             }
         }
 
@@ -219,7 +219,7 @@ namespace IronJS.Runtime
                     return PickReturnObject(Call(o, a0, a1, a2), o);
 
                 default:
-                    return Env.RaiseTypeError<BoxedValue>();
+                    return Env.RaiseTypeError<BoxedValue>("Cannot invoke constructor on a CLR Function");
             }
         }
 
@@ -235,7 +235,7 @@ namespace IronJS.Runtime
                     return PickReturnObject(Call(o, a0, a1, a2, a3), o);
 
                 default:
-                    return Env.RaiseTypeError<BoxedValue>();
+                    return Env.RaiseTypeError<BoxedValue>("Cannot invoke constructor on a CLR Function");
             }
         }
 
@@ -251,7 +251,7 @@ namespace IronJS.Runtime
                     return PickReturnObject(Call(o, args), o);
 
                 default:
-                    return Env.RaiseTypeError<BoxedValue>();
+                    return Env.RaiseTypeError<BoxedValue>("Cannot invoke constructor on a CLR Function");
             }
         }
 

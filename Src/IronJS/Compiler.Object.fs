@@ -182,7 +182,7 @@ module internal Object =
       (fun x -> 
         (Dlr.ternary 
           (Dlr.callStaticT<Object> "ReferenceEquals" [Dlr.castT<obj> x; Dlr.null'])
-          (Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV>] [!!!ErrorUtils.nextErrorId()])
+          (Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV>] [!!!Error.unexpectedNullReference])
           (Utils.Constants.Boxed.undefined)
         )
       )

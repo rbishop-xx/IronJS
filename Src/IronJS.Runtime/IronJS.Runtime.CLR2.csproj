@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\Lib\</OutputPath>
     <DefineConstants>DEBUG;TRACE;CLR2;LEGACY_BIGINT;LEGACY_DELEGATES_HIGH_ARITY</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

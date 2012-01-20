@@ -268,7 +268,7 @@ module internal Utils =
     | TypeTags.String
     | TypeTags.Undefined
     | TypeTags.Number -> 
-      Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV>] [!!!ErrorUtils.nextErrorId()]
+      Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV>] [!!!Error.expectedFunction] 
 
     | TypeTags.Box -> 
       tempBlock expr (fun expr ->
@@ -279,6 +279,7 @@ module internal Utils =
             (Dlr.ternary
               (Box.isClr expr)
               (ifClr (Box.unboxClr expr))
-              (Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV> ] [!!!ErrorUtils.nextErrorId()])
+              (Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV> ] [!!!Error.expectedFunction])
             )
         ])
+        

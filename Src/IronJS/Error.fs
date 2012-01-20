@@ -119,4 +119,8 @@ module Error =
   let missingBreak = "No break target available"
   let missingLabel = sprintf "No label named '%s' available"
   let missingNoConversion (a:Type) (b:Type) = sprintf "No conversion from %s to type %s exists" a.Name b.Name
-
+  let expectedFunction = "Expected a Function"
+  let unexpectedNullReference = "Unexpected null reference"
+  let cannotInvokeCLRFunction = "Cannot Invoke a CLR Function"
+  let unexpectedNullReferenceForMember memberType name = sprintf "Unexpected null reference trying to get %s %s" memberType name
+  let cannotNewCLRFunction = "Cannot call new on a CLR Function"
