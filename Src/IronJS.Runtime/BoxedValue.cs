@@ -124,6 +124,9 @@ namespace IronJS.Runtime
 
         public static BoxedValue Box(CommonObject value)
         {
+            if (value == null)
+                return Environment.BoxedNull;
+
             var box = new BoxedValue();
             box.Clr = value;
             box.Tag = TypeTags.Object;
@@ -170,6 +173,9 @@ namespace IronJS.Runtime
 
         public static BoxedValue Box(object value)
         {
+            if (value == null)
+                return Environment.BoxedNull;
+
             if (value is double)
                 return Box((double)value);
             if (value is int)
