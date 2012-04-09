@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.FSharp.Collections;
-#if !CLR2
+//#if !CLR2
 using System.Dynamic;
-#endif
+//#endif
 
 namespace IronJS.Runtime
 {
@@ -58,14 +58,14 @@ namespace IronJS.Runtime
             }
         }
 
-#if !CLR2
+//#if !CLR2
         public override bool TryInvoke(InvokeBinder binder, object[] args, out object result)
         {
             var boxedArgs = args.Select(x => BoxedValue.Box(x)).ToArray();
             result = Call(Env.Globals, boxedArgs).UnboxObject();
             return true;
         }
-#endif
+//#endif
 
         public CommonObject InstancePrototype
         {

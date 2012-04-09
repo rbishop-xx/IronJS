@@ -116,6 +116,43 @@ module internal Function =
     //
     Utils.ensureFunction ctx func invokeJs invokeClr
 
+
+
+  let invokeFunctionX (ctx:Ctx) this (name:String) (args:Dlr.Expr list) func =
+    
+    //
+    let invokeJs func =
+
+      if args.Length > 4 then
+        invokeVariadic func (Some this) args
+
+      else
+        let argTypes = [|for (a:Dlr.Expr) in args -> a.Type|]
+        let invokeCacheType = Runtime.Optimizations.Utils.getInvokeInlineCache(argTypes)
+        let invokeCache = !!!invokeCacheType.GetConstructor([|typeof<Env>|]).Invoke([|ctx.Target.Environment|])
+        let cachedId = invokeCache .-> "CachedId"
+        let cachedDelegate = invokeCache .-> "CachedDelegate"
+        let metaDataId = func .-> "MetaData" .-> "Id"
+        
+        let args = func :: this :: args
+
+        Dlr.ternary
+          (cachedId .== metaDataId)
+          (Dlr.invoke cachedDelegate args)
+          (Dlr.call invokeCache "Invoke" args)
+
+    //
+    let invokeClr func =
+      Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV>] [!!!Error.cannotInvokeCLRFunction] 
+
+    let raiseNotAFunc = 
+      Dlr.callGeneric ctx.Env "RaiseTypeError" [typeof<BV>] [!!!(String.Format("'{0}' is not a function", name))]
+    //
+    Utils.ensureFunctionX ctx func invokeJs invokeClr raiseNotAFunc
+
+
+
+
   ///
   let invokeIdentifierDynamic (ctx:Ctx) name args =
     let argsArray = Dlr.newArrayItemsT<obj> [for a in args -> Dlr.castT<obj> a]
@@ -129,12 +166,12 @@ module internal Function =
   let invokeIdentifier (ctx:Ctx) name args =
     if ctx.DynamicLookup 
       then invokeIdentifierDynamic ctx name args
-      else name |> Identifier.getValue ctx |> invokeFunction ctx ctx.Globals args
+      else name |> Identifier.getValue ctx |> invokeFunctionX ctx ctx.Globals name args
       
   ///
   let invokeProperty (ctx:Ctx) object' name args =
     (Utils.ensureObject ctx object'
-      (fun x -> x |> Object.Property.get !!!name |> invokeFunction ctx x args)
+      (fun x -> x |> Object.Property.get !!!name |> invokeFunctionX ctx x name args)
       (fun x -> 
         (Dlr.ternary
           (Dlr.isNull_Real x)
@@ -227,24 +264,29 @@ module internal Function =
     let target = Dlr.paramT<EvalTarget> "target"
     let evalTarget = ctx.Compile evalTarget
     //TODO: allow host to block eval
-    Dlr.block [eval; target] [
-      (Dlr.assign eval (ctx.Parameters |> Parameters.globals |> Object.Property.get !!!"eval"))
-      (Dlr.assign target Dlr.newT<EvalTarget>)
+    (Dlr.ternary
+        (Dlr.field ctx.Env "AllowEval")
+        (
+        Dlr.block [eval; target] [
+          (Dlr.assign eval (ctx.Parameters |> Parameters.globals |> Object.Property.get !!!"eval"))
+          (Dlr.assign target Dlr.newT<EvalTarget>)
 
-      (Utils.assign
-        (Dlr.field target "GlobalLevel") 
-        (Dlr.const' (!ctx.Scope).GlobalLevel))
+          (Utils.assign
+            (Dlr.field target "GlobalLevel") 
+            (Dlr.const' (!ctx.Scope).GlobalLevel))
 
-      (Utils.assign
-        (Dlr.field target "ClosureLevel") 
-        (Dlr.const' (!ctx.Scope).ClosureLevel))
+          (Utils.assign
+            (Dlr.field target "ClosureLevel") 
+            (Dlr.const' (!ctx.Scope).ClosureLevel))
         
-      (Utils.assign (Dlr.field target "Target") evalTarget)
-      (Utils.assign (Dlr.field target "Function") ctx.Parameters.Function)
-      (Utils.assign (Dlr.field target "This") ctx.Parameters.This)
-      (Utils.assign (Dlr.field target "LocalScope") ctx.Parameters.PrivateScope)
-      (Utils.assign (Dlr.field target "SharedScope") ctx.Parameters.SharedScope)
-      (Utils.assign (Dlr.field target "DynamicScope") ctx.Parameters.DynamicScope)
+          (Utils.assign (Dlr.field target "Target") evalTarget)
+          (Utils.assign (Dlr.field target "Function") ctx.Parameters.Function)
+          (Utils.assign (Dlr.field target "This") ctx.Parameters.This)
+          (Utils.assign (Dlr.field target "LocalScope") ctx.Parameters.PrivateScope)
+          (Utils.assign (Dlr.field target "SharedScope") ctx.Parameters.SharedScope)
+          (Utils.assign (Dlr.field target "DynamicScope") ctx.Parameters.DynamicScope)
 
-      eval |> invokeFunction ctx ctx.Parameters.This [target]
-    ]
+          eval |> invokeFunction ctx ctx.Parameters.This [target]
+        ])
+        (Dlr.callGeneric ctx.Env "RaiseEvalError" [typeof<BV>] [!!!Error.cannotCallEval])
+    )

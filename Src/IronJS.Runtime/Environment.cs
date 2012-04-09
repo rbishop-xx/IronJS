@@ -25,6 +25,7 @@ namespace IronJS.Runtime
         public CommonObject Globals;
         public int Line;
         public Action<int, int, Dictionary<string, object>> BreakPoint;
+        public bool AllowEval = true;
 
         public Maps Maps;
         public readonly Random Random = new Random();
@@ -289,6 +290,11 @@ namespace IronJS.Runtime
         {
             return this.RaiseError<T>(this.Prototypes.URIError, message);
         }
+
+        //public bool ShouldAllowEval()
+        //{
+        //    return AllowEval;
+        //}
     }
 
     public class Prototypes

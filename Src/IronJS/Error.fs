@@ -124,3 +124,4 @@ module Error =
   let cannotInvokeCLRFunction = "Cannot Invoke a CLR Function"
   let unexpectedNullReferenceForMember memberType name = sprintf "Unexpected null reference trying to get %s %s" memberType name
   let cannotNewCLRFunction = "Cannot call new on a CLR Function"
+  let cannotCallEval = "Cannot call eval: host has disabled this function"

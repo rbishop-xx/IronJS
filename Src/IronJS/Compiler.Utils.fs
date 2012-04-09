@@ -258,6 +258,7 @@ module internal Utils =
               (ifObj (Convert.toObject ctx expr)))
         ])
 
+
   ///
   let ensureFunction (ctx:Ctx) (expr:Dlr.Expr) ifFunc ifClr =
     match expr.Type |> TypeTag.OfType with
@@ -283,3 +284,26 @@ module internal Utils =
             )
         ])
         
+   
+  let ensureFunctionX (ctx:Ctx) (expr:Dlr.Expr) ifFunc ifClr ifNotAFunc =
+    match expr.Type |> TypeTag.OfType with
+    | TypeTags.Function -> tempBlock expr (fun expr -> [ifFunc expr])
+    | TypeTags.Clr -> tempBlock expr (fun expr -> [ifClr expr])
+    | TypeTags.Object
+    | TypeTags.Bool
+    | TypeTags.String
+    | TypeTags.Undefined
+    | TypeTags.Number -> ifNotAFunc
+
+    | TypeTags.Box -> 
+      tempBlock expr (fun expr ->
+        [
+          Dlr.ternary 
+            (Box.isFunction expr)
+            (ifFunc (Box.unboxFunction expr))
+            (Dlr.ternary
+              (Box.isClr expr)
+              (ifClr (Box.unboxClr expr))
+              (ifNotAFunc)
+            )
+        ])
